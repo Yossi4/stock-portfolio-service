@@ -1,4 +1,4 @@
-# Stock Portfolio Service (Cloud Computing Assignment #1)
+# Stock Portfolio Service (Cloud Computing)
 
 This is a Spring Boot REST API for managing a stock portfolio, supporting CRUD operations and real-time stock price retrieval using the API Ninjas 
 Stock Price API. The service runs inside a Docker container and listens on port 5001 by default.
