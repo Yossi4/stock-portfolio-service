@@ -1,4 +1,4 @@
-# Stock Portfolio Service (Cloud Computing)
+# Stock Portfolio Service (Cloud Computing Assignment #1)
 
 This is a Spring Boot REST API for managing a stock portfolio, supporting CRUD operations and real-time stock price retrieval using the API Ninjas 
 Stock Price API. The service runs inside a Docker container and listens on port 5001 by default.
@@ -20,19 +20,18 @@ Stock Price API. The service runs inside a Docker container and listens on port 
 
 | Endpoint            | Method | Description                           |
 |---------------------|--------|-------------------------------------|
-| `/stocks`           | GET    | List all stocks in the portfolio     |
-| `/stocks`           | POST   | Add a new stock to the portfolio     |
-| `/stocks/{id}`      | GET    | Retrieve a specific stock by ID      |
-| `/stocks/{id}`      | PUT    | Update a specific stock by ID        |
-| `/stocks/{id}`      | DELETE | Delete a stock by ID                  |
-| `/stock-value/{id}` | GET    | Get current value of a stock          |
-| `/portfolio-value`  | GET    | Get total value of the portfolio      |
+| /stocks             | GET    | List all stocks in the portfolio     |
+| /stocks             | POST   | Add a new stock to the portfolio     |
+| /stocks/{id}        | GET    | Retrieve a specific stock by ID      |
+| /stocks/{id}        | PUT    | Update a specific stock by ID        |
+| /stocks/{id}        | DELETE | Delete a stock by ID                  |
+| /stock-value/{id}   | GET    | Get current value of a stock          |
+| /portfolio-value    | GET    | Get total value of the portfolio      |
 
 ---
 
 ## JSON Representation of a Stock Object
 
-```json
 {
   "id": "string",
   "name": "string",
@@ -41,4 +40,129 @@ Stock Price API. The service runs inside a Docker container and listens on port 
   "purchase date": "DD-MM-YYYY",
   "shares": int
 }
+
+Notes on JSON fields:  
+- id: Unique string ID assigned by the server (not provided in POST requests)  
+- name: Company name; if missing on POST, server returns "NA"  
+- symbol: Stock ticker symbol (uppercase)  
+- purchase price: Price paid per share, rounded to 2 decimal places  
+- purchase date: Date of purchase in DD-MM-YYYY format; if missing on POST, server returns "NA"  
+- shares: Number of shares owned  
+
+---
+
+## Example JSON for Adding a Stock (POST /stocks)
+
+{
+  "symbol": "GOOG",
+  "purchase price": 140.12,
+  "shares": 14,
+  "name": "Alphabet Inc.",
+  "purchase date": "24-10-2023"
+}
+
+---
+
+## Example JSON Returned by GET /stocks
+
+[
+  {
+    "id": "1",
+    "name": "Alphabet Inc.",
+    "symbol": "GOOG",
+    "purchase price": 140.12,
+    "purchase date": "24-10-2023",
+    "shares": 14
+  },
+  {
+    "id": "2",
+    "name": "Apple Inc.",
+    "symbol": "AAPL",
+    "purchase price": 183.63,
+    "purchase date": "22-02-2024",
+    "shares": 19
+  }
+]
+
+---
+
+## Example JSON Returned by GET /stock-value/{id}
+
+{
+  "symbol": "AAPL",
+  "ticker": 226.96,
+  "stock value": 4312.24
+}
+
+---
+
+## Example JSON Returned by GET /portfolio-value
+
+{
+  "date": "15-10-2024",
+  "portfolio value": 10500.47
+}
+
+---
+
+## Error JSON Responses
+
+| Status Code | JSON Example                                | Description           |
+|-------------|--------------------------------------------|-----------------------|
+| 400         | {"error": "Malformed data"}                 | Bad request data      |
+| 404         | {"error": "Not found"}                       | Resource not found    |
+| 415         | {"error": "Expected application/json media type"} | Unsupported media type |
+| 500         | {"server error": "Exception message or API error"} | Server or API errors  |
+
+---
+
+## Running the Service with Docker
+
+### Prerequisites
+
+- Docker installed on your machine
+
+### Build Docker Image
+
+docker build -t stock-portfolio-service .
+
+### Run Docker Container
+
+docker run -p 5001:5001 --env NINJA_API_KEY=your_api_key_here stock-portfolio-service
+
+- The container listens on port 5001  
+- Replace your_api_key_here with your actual API Ninjas stock price API key  
+
+---
+
+## Interacting with the API
+
+You can use curl or Postman to interact with the API.
+
+### Example: Add a stock (POST)
+
+curl -X POST http://localhost:5001/stocks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "symbol": "GOOG",
+    "purchase price": 140.12,
+    "shares": 14,
+    "name": "Alphabet Inc.",
+    "purchase date": "24-10-2023"
+  }'
+
+### Example: Get portfolio value (GET)
+
+curl http://localhost:5001/portfolio-value
+
+---
+
+## Assignment Notes
+
+- Data is not persistent; restarting the container clears the portfolio  
+- IDs are unique strings and never reused  
+- The service fetches live stock prices from the API Ninjas Stock Price API  
+- Make sure to include your API key in the container environment  
+- The service listens on port 5001 (configurable)  
+- Tested to meet all assignment requirements, including proper status codes and JSON responses
 
